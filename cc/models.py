@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from decimal import Decimal
 
 from bitcoinaddress import validate
 from django.db import models
@@ -64,6 +65,9 @@ class Wallet(models.Model):
         self.balance -= amount
         self.holded += amount
         self.save()
+
+    def total_received(self):
+        return Operation.objects.filter(wallet=self, balance__gt=0).aggregate(balance=Sum('balance'))['balance'] or Decimal('0')
 
     def recalc_balace(self):
         return Operation.objects.filter(wallet=self).aggregate(balance=Sum('balance'),
