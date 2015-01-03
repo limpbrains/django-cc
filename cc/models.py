@@ -55,6 +55,30 @@ class Wallet(models.Model):
         self.balance -= amount
         self.save()
 
+    def transfer(self, amount, deposite_wallet, reason=None, description=""):
+        if amount < 0:
+            raise ValueError('Invalid amount')
+
+        if self.balance - amount < -settings.CC_ALLOW_NEGATIVE_BALANCE:
+            raise ValueError('No money')
+
+        Operation.objects.create(
+            wallet=self,
+            balance=-amount,
+            description=description,
+            reason=reason
+        )
+        Operation.objects.create(
+            wallet=deposite_wallet,
+            balance=+amount,
+            description=description,
+            reason=reason
+        )
+        self.balance -= amount
+        self.save()
+        deposite_wallet.balance += amount
+        deposite_wallet.save()
+
     def withdraw_to_address(self, address, amount, description=""):
         if not validate(address, magicbyte=self.currency.magicbyte.split(',')):
             raise ValueError('Invalid address')

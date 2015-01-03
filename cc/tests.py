@@ -229,3 +229,22 @@ class TaskRefillAddressQueue(TestCase):
             tasks.refill_addresses_queue()
 
         self.assertEqual(len(Address.objects.all()), settings.CC_ADDRESS_QUEUE)
+
+
+class WalletTransfer(TestCase):
+    def setUp(self):
+        self.currency = Currency.objects.create(label='Testnet', ticker='tst', magicbyte='111,196')
+        self.wallet1 = Wallet.objects.create(currency=self.currency, balance=1)
+        self.wallet2 = Wallet.objects.create(currency=self.currency, balance=0)
+
+    def test_transfer(self):
+        self.wallet1.transfer(Decimal('1'), self.wallet2)
+
+        self.assertEqual(self.wallet1.balance, 0)
+        self.assertEqual(self.wallet2.balance, 1)
+
+        o1 = Operation.objects.get(wallet=self.wallet1)
+        o2 = Operation.objects.get(wallet=self.wallet2)
+
+        self.assertEqual(o1.balance, -1)
+        self.assertEqual(o2.balance, 1)
