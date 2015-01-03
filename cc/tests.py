@@ -132,7 +132,7 @@ class WalletWithdraw(TestCase):
         self.desc = 'some desc'
 
     def test_operation(self):
-        self.wallet.withdraw(self.address, self.amount, self.desc)
+        self.wallet.withdraw_to_address(self.address, self.amount, self.desc)
         op = Operation.objects.all()[0]
 
         self.assertEqual(op.wallet, self.wallet)
@@ -142,18 +142,18 @@ class WalletWithdraw(TestCase):
         self.assertIsNotNone(op.reason)
 
     def test_wallet(self):
-        self.wallet.withdraw(self.address, self.amount, self.desc)
+        self.wallet.withdraw_to_address(self.address, self.amount, self.desc)
         wallet = Wallet.objects.get(id=self.wallet.id)
         self.assertEqual(wallet.balance, Decimal('0'))
         self.assertEqual(wallet.holded, self.amount)
 
     def test_no_money(self):
         with self.assertRaises(ValueError):
-            self.wallet.withdraw(self.address, Decimal('100'))
+            self.wallet.withdraw_to_address(self.address, Decimal('100'))
 
     def test_wrong_address(self):
         with self.assertRaises(ValueError):
-            self.wallet.withdraw('mz4ZbfKfU4SQWRDagkfX2TLAotpimAAVFE', Decimal('100'))
+            self.wallet.withdraw_to_address('mz4ZbfKfU4SQWRDagkfX2TLAotpimAAVFE', Decimal('100'))
 
 
 class TaskWithdraw(TestCase):
@@ -193,10 +193,10 @@ class TaskWithdraw(TestCase):
 
 
     def test_process_withdraw_transacions(self):
-        self.wallet.withdraw('mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB', Decimal('0.1'))
-        self.wallet.withdraw('mkYAsS9QLYo5mXVjuvxKkZUhQJxiMLX5Xk', Decimal('0.1'))
-        self.wallet.withdraw('mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB', Decimal('0.1'))
-        self.wallet.withdraw('mvfNqn5AoVWrsJGuKrdPuoQhYs71CR9uFA', Decimal('0.1'))
+        self.wallet.withdraw_to_address('mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB', Decimal('0.1'))
+        self.wallet.withdraw_to_address('mkYAsS9QLYo5mXVjuvxKkZUhQJxiMLX5Xk', Decimal('0.1'))
+        self.wallet.withdraw_to_address('mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB', Decimal('0.1'))
+        self.wallet.withdraw_to_address('mvfNqn5AoVWrsJGuKrdPuoQhYs71CR9uFA', Decimal('0.1'))
 
         with patch('cc.tasks.AuthServiceProxy', self.mock):
             tasks.process_withdraw_transacions(ticker=self.currency.ticker)
