@@ -1,9 +1,13 @@
+from __future__ import absolute_import
+
 from django.contrib import admin
 
-from cc import models
+from . import models
+from .forms import WalletAdminForm
 
 
 class WalletAdmin(admin.ModelAdmin):
+    form = WalletAdminForm
     list_display = ('currency', 'balance', 'holded', 'unconfirmed', 'label', 'get_address')
     list_filter = ('currency',)
 

@@ -18,7 +18,7 @@ class Wallet(models.Model):
     balance = models.DecimalField(_('Balance'), max_digits=18, decimal_places=8, default=0)
     holded = models.DecimalField(_('Holded'), max_digits=18, decimal_places=8, default=0)
     unconfirmed = models.DecimalField(_('Unconfirmed'), max_digits=18, decimal_places=8, default=0)
-    label = models.CharField(_('Label'), max_length=100, blank=True, null=True)
+    label = models.CharField(_('Label'), max_length=100, blank=True, null=True, unique=True)
 
     def __unicode__(self):
         return u'{0} {1} "{2}"'.format(self.balance, self.currency.ticker, self.label or '')
