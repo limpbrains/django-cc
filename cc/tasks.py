@@ -181,7 +181,7 @@ def process_withdraw_transacions(ticker=None):
             wallet=tx.wallet,
             holded=-tx.amount,
             balance=-fee_per_tx,
-            description='Withdraw',
+            description='Network fee',
             reason=tx
         )
 
