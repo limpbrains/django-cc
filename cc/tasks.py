@@ -140,7 +140,7 @@ def refill_addresses_queue():
 
         if count < settings.CC_ADDRESS_QUEUE:
             for i in xrange(count, settings.CC_ADDRESS_QUEUE):
-                Address.objects.create(address=coin.getnewaddress(), currency=currency)
+                Address.objects.create(address=coin.getnewaddress(settings.CC_ACCOUNT), currency=currency)
 
 
 @shared_task(throws=(socket_error,))
@@ -165,7 +165,7 @@ def process_withdraw_transacions(ticker=None):
     if not transaction_hash:
         return
 
-    txid = coin.sendmany("", transaction_hash)
+    txid = coin.sendmany(settings.CC_ACCOUNT, transaction_hash)
 
     if not txid:
         return
