@@ -159,9 +159,13 @@ class Currency(models.Model):
 
 
 class Transaction(models.Model):
-    txid = models.CharField(_('Txid'), max_length=100, unique=True)
+    txid = models.CharField(_('Txid'), max_length=100)
+    address = models.CharField(_('Address'), max_length=50)
     currency = models.ForeignKey('Currency')
     processed = models.BooleanField(_('Processed'), default=False)
+
+    class Meta:
+        unique_together = (('txid', 'address'),)
 
 
 class WithdrawTransaction(models.Model):

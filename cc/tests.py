@@ -10,6 +10,10 @@ from cc import tasks
 from cc import settings
 
 
+settings.CC_CONFIRMATIONS = 2
+settings.CC_ACCOUNT = ''
+
+
 class DepositeTransacion(TestCase):
     def setUp(self):
         self.txdict = {
@@ -90,7 +94,7 @@ class ConfirmTransacion(TestCase):
         self.currency = Currency.objects.create(label='Bitcoin', ticker='btc')
         self.wallet = Wallet.objects.create(currency=self.currency, label='Test', unconfirmed=Decimal('5.0'))
         self.address = Address.objects.create(address=self.txdict['address'], wallet=self.wallet, currency=self.currency)
-        self.tx = Transaction.objects.create(txid=self.txdict['txid'], currency=self.currency)
+        self.tx = Transaction.objects.create(txid=self.txdict['txid'], address=self.txdict['address'], currency=self.currency)
         tasks.process_deposite_transaction(self.txdict, 'btc')
 
     def test_balance(self):
@@ -248,3 +252,49 @@ class WalletTransfer(TestCase):
 
         self.assertEqual(o1.balance, -1)
         self.assertEqual(o2.balance, 1)
+
+
+class QueryTransacion(TestCase):
+    def setUp(self):
+        self.txdict = {
+            "amount" : Decimal('3'),
+            "confirmations" : 54271,
+            "blockhash" : "00000000000000017adae0a02c36e7a6379991aad2ce35c2ba1b540aff01d7b8",
+            "blockindex" : 744,
+            "blocktime" : 1391222639,
+            "txid" : "01c17411ff6a4278ada87c28dad74b9d1e79c799743fd2d63dac945645123ab3",
+            "walletconflicts" : [
+            ],
+            "time" : 1391222405,
+            "timereceived" : 1391222405,
+            "details" : [
+                {
+                    "account" : "somerandomstring14aqqwd",
+                    "address" : "16ahqjUA7VJMuBpKjR3zX48xnTgPMM47cr",
+                    "category" : "receive",
+                    "amount" : Decimal('1')
+                },
+                {
+                    "account" : "somerandomstring14aqqwd",
+                    "address" : "1FLrCWUJw5SG7uDHzkrRLih55PxMC763eu",
+                    "category" : "receive",
+                    "amount" : Decimal('2')
+                }
+            ]
+        }
+        self.currency = Currency.objects.create(label='BItcoin', ticker='BTC', magicbyte='0,5')
+        self.wallet = Wallet.objects.create(currency=self.currency, label='Test')
+        self.address1 = Address.objects.create(address=self.txdict['details'][0]['address'], wallet=self.wallet, currency=self.currency)
+        self.address2 = Address.objects.create(address=self.txdict['details'][1]['address'], wallet=self.wallet, currency=self.currency)
+
+        self.mock = MagicMock(name='asp')
+        self.mock.return_value = self.mock
+        self.mock.gettransaction.return_value = self.txdict
+
+    def test_balance(self):
+        with patch('cc.tasks.AuthServiceProxy', self.mock):
+            tasks.query_transaction('BTC', self.txdict['txid'])
+
+        wallet = Wallet.objects.get(id=self.wallet.id)
+
+        self.assertEqual(wallet.balance, Decimal('3'))

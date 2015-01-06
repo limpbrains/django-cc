@@ -70,7 +70,7 @@ def process_deposite_transaction(txdict, ticker):
         address.wallet = wallet
         address.save()
 
-    tx, created = Transaction.objects.select_for_update().get_or_create(txid=txdict['txid'], currency=currency)
+    tx, created = Transaction.objects.select_for_update().get_or_create(txid=txdict['txid'], address=txdict['address'], currency=currency)
 
     if tx.processed:
         return
@@ -118,17 +118,19 @@ def process_deposite_transaction(txdict, ticker):
 def query_transaction(ticker, txid):
     currency = Currency.objects.select_for_update().get(ticker=ticker)
     coin = AuthServiceProxy(currency.api_url)
-    txdict = normalise_txifno(coin.gettransaction(txid))
-    process_deposite_transaction(txdict, ticker)
+    for txdict in normalise_txifno(coin.gettransaction(txid)):
+        process_deposite_transaction(txdict, ticker)
 
 
 def normalise_txifno(data):
-    txdict = data['details'][0]
-    txdict['confirmations'] = data['confirmations']
-    txdict['txid'] = data['txid']
-    txdict['timereceived'] = data['timereceived']
-    txdict['time'] = data['time']
-    return txdict
+    arr = []
+    for t in data['details']:
+        t['confirmations'] = data['confirmations']
+        t['txid'] = data['txid']
+        t['timereceived'] = data['timereceived']
+        t['time'] = data['time']
+        arr.append(t)
+    return arr
 
 
 @shared_task(throws=(socket_error,))
