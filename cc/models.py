@@ -171,4 +171,4 @@ class WithdrawTransaction(models.Model):
     wallet = models.ForeignKey(Wallet)
     created = models.DateTimeField(_('Created'), default=now)
     txid = models.CharField(_('Txid'), max_length=100, blank=True, null=True)
-    fee = models.DecimalField(_('Amount'), max_digits=18, decimal_places=8, null=True, blank=True)
+    fee = models.DecimalField(_('Fee'), max_digits=18, decimal_places=8, null=True, blank=True)
