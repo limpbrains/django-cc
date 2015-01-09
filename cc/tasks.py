@@ -178,7 +178,7 @@ def process_withdraw_transacions(ticker=None):
     if not fee:
         fee_per_tx = 0
     else:
-        fee_per_tx = (fee / len(wtxs)).quantize(Decimal("0.00000001"))
+        fee_per_tx = (fee / len(wtxs))
 
     fee_hash = defaultdict(lambda : {'fee': Decimal("0"), 'amount': Decimal('0')})
 
