@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from socket import error as socket_error
 from decimal import Decimal
+from collections import defaultdict
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -13,6 +14,7 @@ from cc.models import (Wallet, Currency, Transaction, Address,
 from cc import settings
 
 logger = get_task_logger(__name__)
+
 
 
 @shared_task(throws=(socket_error,))
@@ -156,7 +158,7 @@ def process_withdraw_transacions(ticker=None):
     currency = Currency.objects.select_for_update().get(ticker=ticker)
     coin = AuthServiceProxy(currency.api_url)
 
-    wtxs = WithdrawTransaction.objects.select_for_update().select_related('wallet').filter(currency=currency, txid=None)
+    wtxs = WithdrawTransaction.objects.select_for_update().select_related('wallet').filter(currency=currency, txid=None).order_by('wallet')
 
     transaction_hash = {}
     for tx in wtxs:
@@ -178,18 +180,24 @@ def process_withdraw_transacions(ticker=None):
     else:
         fee_per_tx = (fee / len(wtxs)).quantize(Decimal("0.00000001"))
 
+    fee_hash = defaultdict(lambda : {'fee': Decimal("0"), 'amount': Decimal('0')})
+
     for tx in wtxs:
+        fee_hash[tx.wallet]['fee'] += fee_per_tx
+        fee_hash[tx.wallet]['amount'] += tx.amount
+
+    for (wallet, data) in fee_hash.iteritems():
         Operation.objects.create(
-            wallet=tx.wallet,
-            holded=-tx.amount,
-            balance=-fee_per_tx,
+            wallet=wallet,
+            holded=-data['amount'],
+            balance=-data['fee'],
             description='Network fee',
             reason=tx
         )
 
         wallet = Wallet.objects.get(id=tx.wallet.id)
-        wallet.balance -= fee_per_tx
-        wallet.holded -= tx.amount
+        wallet.balance -= data['fee']
+        wallet.holded -= data['amount']
         wallet.save()
 
     wtxs.update(txid=txid, fee=fee_per_tx)

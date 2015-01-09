@@ -216,6 +216,10 @@ class TaskWithdraw(TestCase):
         self.assertEqual(wallet.holded, Decimal('0'))
         self.assertEqual(wallet.balance, Decimal('0.5999'))
 
+        fee_operation = Operation.objects.get(wallet=wallet, description='Network fee')
+        self.assertEqual(fee_operation.balance, Decimal('-0.0001'))
+        self.assertEqual(fee_operation.holded, Decimal('-0.4'))
+
 
 class TaskRefillAddressQueue(TestCase):
     def setUp(self):
