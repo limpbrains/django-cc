@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from socket import error as socket_error
 from decimal import Decimal
 from collections import defaultdict
+from httplib import CannotSendRequest
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -14,7 +15,6 @@ from cc.models import (Wallet, Currency, Transaction, Address,
 from cc import settings
 
 logger = get_task_logger(__name__)
-
 
 
 @shared_task(throws=(socket_error,))
@@ -135,8 +135,7 @@ def normalise_txifno(data):
     return arr
 
 
-@shared_task(throws=(socket_error,))
-@transaction.atomic
+@shared_task()
 def refill_addresses_queue():
     for currency in Currency.objects.all():
         coin = AuthServiceProxy(currency.api_url)
@@ -144,7 +143,10 @@ def refill_addresses_queue():
 
         if count < settings.CC_ADDRESS_QUEUE:
             for i in xrange(count, settings.CC_ADDRESS_QUEUE):
-                Address.objects.create(address=coin.getnewaddress(settings.CC_ACCOUNT), currency=currency)
+                try:
+                    Address.objects.create(address=coin.getnewaddress(settings.CC_ACCOUNT), currency=currency)
+                except (socket_error, CannotSendRequest) :
+                    pass
 
 
 @shared_task(throws=(socket_error,))
