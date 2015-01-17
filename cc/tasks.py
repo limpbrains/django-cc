@@ -10,9 +10,10 @@ from bitcoinrpc.authproxy import AuthServiceProxy
 
 from django.db import transaction
 
-from cc.models import (Wallet, Currency, Transaction, Address,
+from .models import (Wallet, Currency, Transaction, Address,
                        WithdrawTransaction, Operation)
-from cc import settings
+from . import settings
+from .signals import post_deposite
 
 logger = get_task_logger(__name__)
 
@@ -112,6 +113,7 @@ def process_deposite_transaction(txdict, ticker):
             wallet.save()
             tx.processed = True
 
+    post_deposite.send(sender=process_deposite_transaction, instance=wallet)
     tx.save()
 
 
