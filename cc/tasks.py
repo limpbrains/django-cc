@@ -38,7 +38,7 @@ def query_transactions(ticker=None):
         if tx['txid'] in processed_transactions:
             continue
 
-        if tx['category'] not in ('receive', 'generated'):
+        if tx['category'] not in ('receive', 'generated', 'immature'):
             continue
 
         process_deposite_transaction(tx, ticker)
@@ -53,7 +53,7 @@ def query_transactions(ticker=None):
 
 @transaction.atomic
 def process_deposite_transaction(txdict, ticker):
-    if txdict['category'] not in ('receive', 'generated'):
+    if txdict['category'] not in ('receive', 'generated', 'immature'):
         return
 
     try:
@@ -79,7 +79,7 @@ def process_deposite_transaction(txdict, ticker):
         return
 
     if created:
-        if txdict['confirmations'] >= settings.CC_CONFIRMATIONS:
+        if txdict['confirmations'] >= settings.CC_CONFIRMATIONS and txdict['category'] != 'immature':
             Operation.objects.create(
                 wallet=wallet,
                 balance=txdict['amount'],
@@ -100,7 +100,7 @@ def process_deposite_transaction(txdict, ticker):
             wallet.save()
 
     else:
-        if txdict['confirmations'] >= settings.CC_CONFIRMATIONS:
+        if txdict['confirmations'] >= settings.CC_CONFIRMATIONS and txdict['category'] != 'immature':
             Operation.objects.create(
                 wallet=wallet,
                 unconfirmed=-txdict['amount'],
