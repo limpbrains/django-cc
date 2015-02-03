@@ -38,7 +38,7 @@ def query_transactions(ticker=None):
         if tx['txid'] in processed_transactions:
             continue
 
-        if tx['category'] not in ('receive', 'generated', 'immature'):
+        if tx['category'] not in ('receive', 'generate', 'immature'):
             continue
 
         process_deposite_transaction(tx, ticker)
@@ -53,7 +53,7 @@ def query_transactions(ticker=None):
 
 @transaction.atomic
 def process_deposite_transaction(txdict, ticker):
-    if txdict['category'] not in ('receive', 'generated', 'immature'):
+    if txdict['category'] not in ('receive', 'generate', 'immature'):
         return
 
     try:
