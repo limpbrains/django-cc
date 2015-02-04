@@ -54,14 +54,14 @@ wallet.get_address()
 wallet.withdraw('mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB', Decimal('0.01'))
 ```
 
-After creating a withdraw transacion you need to run
+After creating a withdraw transaction you need to run
 
 ```
 #!bash
-$ celery call cc.tasks.process_withdraw_transacions
+$ celery call cc.tasks.process_withdraw_transactions
 ```
 
-Query for new deposite transacions:
+Query for new deposite transactions:
 ```
 #!bash
 $ cc.tasks.query_transactions

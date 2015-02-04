@@ -153,10 +153,10 @@ def refill_addresses_queue():
 
 @shared_task(throws=(socket_error,))
 @transaction.atomic
-def process_withdraw_transacions(ticker=None):
+def process_withdraw_transactions(ticker=None):
     if not ticker:
         for c in Currency.objects.all():
-            process_withdraw_transacions.delay(c.ticker)
+            process_withdraw_transactions.delay(c.ticker)
         return
 
     currency = Currency.objects.select_for_update().get(ticker=ticker)

@@ -14,7 +14,7 @@ settings.CC_CONFIRMATIONS = 2
 settings.CC_ACCOUNT = ''
 
 
-class DepositeTransacion(TestCase):
+class DepositeTransaction(TestCase):
     def setUp(self):
         self.txdict = {
             'category': 'receive',
@@ -44,7 +44,7 @@ class DepositeTransacion(TestCase):
         self.assertTrue(tx.processed)
 
 
-class UnconfirmedTransacion(TestCase):
+class UnconfirmedTransaction(TestCase):
     def setUp(self):
         self.txdict = {
             'category': 'receive',
@@ -75,7 +75,38 @@ class UnconfirmedTransacion(TestCase):
         self.assertFalse(tx.processed)
 
 
-class ConfirmTransacion(TestCase):
+class ImmatureTransaction(TestCase):
+    def setUp(self):
+        self.txdict = {
+            'category': 'immature',
+            'account': '',
+            'blockhash': '000000008468ce0ec51c64aa98cf99b317274c5287e770c9eddaa83fa33222ef',
+            'blockindex': 1,
+            'walletconflicts': [],
+            'time': 1422794361,
+            'txid': '63fadb05b2f6b0c83925d402c6cf27bc841acaa8c89a335914f77f75b22ef5dc',
+            'blocktime': 1409154118,
+            'amount': Decimal('1.00000000'),
+            'confirmations': 1,
+            'timereceived': 1422794579,
+            'address': '12aJBBXWcWPxfQbXL4PQ3qtx978wwLL2g9'
+        }
+        self.currency = Currency.objects.create(label='Bitcoin', ticker='btc')
+        self.wallet = Wallet.objects.create(currency=self.currency, label='Test')
+        self.address = Address.objects.create(address=self.txdict['address'], wallet=self.wallet, currency=self.currency)
+        tasks.process_deposite_transaction(self.txdict, 'btc')
+
+    def test_balance(self):
+        wallet = Wallet.objects.get(id=self.wallet.id)
+        self.assertEqual(wallet.unconfirmed, self.txdict['amount'])
+        self.assertEqual(wallet.balance, Decimal('0'))
+
+    def test_tx(self):
+        tx = Transaction.objects.get(txid=self.txdict['txid'])
+        self.assertFalse(tx.processed)
+
+
+class ConfirmTransaction(TestCase):
     def setUp(self):
         self.txdict = {
             'category': 'receive',
@@ -196,14 +227,14 @@ class TaskWithdraw(TestCase):
         }
 
 
-    def test_process_withdraw_transacions(self):
+    def test_process_withdraw_transactions(self):
         self.wallet.withdraw_to_address('mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB', Decimal('0.1'))
         self.wallet.withdraw_to_address('mkYAsS9QLYo5mXVjuvxKkZUhQJxiMLX5Xk', Decimal('0.1'))
         self.wallet.withdraw_to_address('mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB', Decimal('0.1'))
         self.wallet.withdraw_to_address('mvfNqn5AoVWrsJGuKrdPuoQhYs71CR9uFA', Decimal('0.1'))
 
         with patch('cc.tasks.AuthServiceProxy', self.mock):
-            tasks.process_withdraw_transacions(ticker=self.currency.ticker)
+            tasks.process_withdraw_transactions(ticker=self.currency.ticker)
 
         self.mock.gettransaction.assert_called_once_with(self.txid)
         self.mock.sendmany.assert_called_once_with('', {
@@ -258,7 +289,7 @@ class WalletTransfer(TestCase):
         self.assertEqual(o2.balance, 1)
 
 
-class QueryTransacion(TestCase):
+class QueryTransaction(TestCase):
     def setUp(self):
         self.txdict = {
             "amount" : Decimal('3'),
