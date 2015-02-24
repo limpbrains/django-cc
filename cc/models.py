@@ -117,6 +117,21 @@ class Wallet(models.Model):
     def get_operations(self):
         return Operation.objects.filter(wallet=self).order_by('-created')
 
+    def get_unpaid_dust_summary(self):
+        if not self.currency.dust:
+            return {}
+
+        txs = WithdrawTransaction.objects.filter(wallet=self, txid=None, amount__lt=self.currency.dust)
+        if len(txs) == 0:
+            return {}
+
+        from collections import defaultdict
+        tx_hash = defaultdict(lambda : Decimal('0'))
+        for tx in txs:
+            tx_hash[tx.address] += tx.amount
+
+        return dict(tx_hash)
+
 
 class Operation(models.Model):
     wallet = models.ForeignKey(Wallet)
@@ -150,6 +165,7 @@ class Currency(models.Model):
     magicbyte = models.CommaSeparatedIntegerField(_('Magicbytes'), max_length=10, default='0,5')
     last_block = models.PositiveIntegerField(_('Last block'), blank=True, null=True, default=0)
     api_url = models.CharField(_('API hostname'), default='http://localhost:8332', max_length=100, blank=True, null=True)
+    dust = models.DecimalField(_('Dust'), max_digits=18, decimal_places=8, default=Decimal('0.0000543'))
 
     class Meta:
         verbose_name_plural = _('currencies')

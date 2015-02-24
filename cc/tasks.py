@@ -170,6 +170,13 @@ def process_withdraw_transactions(ticker=None):
             transaction_hash[tx.address] += tx.amount
         else:
             transaction_hash[tx.address] = tx.amount
+
+    if currency.dust > Decimal('0'):
+        for address, amount in transaction_hash.items():
+            if amount < currency.dust:
+                wtxs = wtxs.exclude(currency=currency, address=address)
+                del transaction_hash[address]
+
     if not transaction_hash:
         return
 
