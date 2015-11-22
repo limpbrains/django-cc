@@ -109,10 +109,17 @@ class Wallet(models.Model):
     def total_received(self):
         return Operation.objects.filter(wallet=self, balance__gt=0).aggregate(balance=Sum('balance'))['balance'] or Decimal('0')
 
-    def recalc_balance(self):
-        return Operation.objects.filter(wallet=self).aggregate(balance=Sum('balance'),
-                                                            holded=Sum('holded'),
-                                                            unconfirmed=Sum('unconfirmed'))
+    def recalc_balance(self, save=False):
+        recalc = Operation.objects.filter(wallet=self).aggregate(balance=Sum('balance'),
+                                   holded=Sum('holded'),
+                                   unconfirmed=Sum('unconfirmed'))
+
+        if save:
+            self.balance = recalc['balance']
+            self.holded = recalc['holded']
+            self.unconfirmed = recalc['unconfirmed']
+
+        return recalc
 
     def get_operations(self):
         return Operation.objects.filter(wallet=self).order_by('-created')
