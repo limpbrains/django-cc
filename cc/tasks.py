@@ -172,7 +172,7 @@ def process_withdraw_transactions(ticker=None):
             transaction_hash[tx.address] = tx.amount
 
     if currency.dust > Decimal('0'):
-        for address, amount in transaction_hash.items():
+        for address, amount in list(transaction_hash.items()):
             if amount < currency.dust:
                 wtxs = wtxs.exclude(currency=currency, address=address)
                 del transaction_hash[address]
@@ -197,7 +197,7 @@ def process_withdraw_transactions(ticker=None):
         fee_hash[tx.wallet]['fee'] += fee_per_tx
         fee_hash[tx.wallet]['amount'] += tx.amount
 
-    for (wallet, data) in fee_hash.iteritems():
+    for (wallet, data) in fee_hash.items():
         Operation.objects.create(
             wallet=wallet,
             holded=-data['amount'],
