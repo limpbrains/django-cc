@@ -20,7 +20,7 @@ class Wallet(models.Model):
     unconfirmed = models.DecimalField(_('Unconfirmed'), max_digits=18, decimal_places=8, default=0)
     label = models.CharField(_('Label'), max_length=100, blank=True, null=True, unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{0} {1} "{2}"'.format(self.balance, self.currency.ticker, self.label or '')
 
     def get_address(self):
@@ -162,7 +162,7 @@ class Address(models.Model):
     label = models.CharField(_('Label'), max_length=50, blank=True, null=True, default=None)
     wallet = models.ForeignKey(Wallet, blank=True, null=True, related_name="addresses")
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{0}, {1}'.format(self.address, self.currency.ticker)
 
 
@@ -177,7 +177,7 @@ class Currency(models.Model):
     class Meta:
         verbose_name_plural = _('currencies')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
 

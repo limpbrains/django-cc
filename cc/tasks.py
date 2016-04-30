@@ -144,7 +144,7 @@ def refill_addresses_queue():
         count = Address.objects.filter(currency=currency, active=True, wallet=None).count()
 
         if count < settings.CC_ADDRESS_QUEUE:
-            for i in xrange(count, settings.CC_ADDRESS_QUEUE):
+            for i in range(count, settings.CC_ADDRESS_QUEUE):
                 try:
                     Address.objects.create(address=coin.getnewaddress(settings.CC_ACCOUNT), currency=currency)
                 except (socket_error, CannotSendRequest) :
