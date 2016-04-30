@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from socket import error as socket_error
 from decimal import Decimal
 from collections import defaultdict
-from httplib import CannotSendRequest
+from http.client import CannotSendRequest
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
