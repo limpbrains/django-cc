@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
 
-from bitcoinaddress import validate
 from django.db import models
 from django.db.models import Sum
 
@@ -11,7 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import now
 
 from cc import settings
-
+from cc.validator import validate
 
 class Wallet(models.Model):
     currency = models.ForeignKey('Currency')
@@ -80,7 +79,7 @@ class Wallet(models.Model):
         deposite_wallet.save()
 
     def withdraw_to_address(self, address, amount, description=""):
-        if not validate(address, magicbyte=self.currency.magicbyte.split(',')):
+        if not validate(address, self.currency.magicbyte):
             raise ValueError('Invalid address')
 
         if amount < 0:

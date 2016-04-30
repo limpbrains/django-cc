@@ -15,8 +15,9 @@ setup(
     packages=find_packages(),
     long_description=open(join(dirname(__file__), 'README.md')).read(),
     install_requires=[
-        # TODO add python-bitcoinaddress and python-bitcoinrpc when new version will be released
+        # TODO add python-bitcoinrpc when new version will be released
         'Django>=1.7',
-        'celery'
+        'celery',
+        'pycoin',
     ]
 )
