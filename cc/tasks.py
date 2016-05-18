@@ -180,6 +180,9 @@ def process_withdraw_transactions(ticker=None):
     if not transaction_hash:
         return
 
+    # this will fail if bitcoin offline
+    coin.getbalance()
+
     txid = coin.sendmany(settings.CC_ACCOUNT, transaction_hash)
 
     if not txid:
