@@ -193,7 +193,7 @@ def process_withdraw_transactions(ticker=None):
     txid = coin.sendmany(settings.CC_ACCOUNT, transaction_hash)
 
     if not txid:
-        return
+        raise AssertionError('txid is empty')
 
     fee = coin.gettransaction(txid).get('fee', 0) * -1
 
