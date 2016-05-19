@@ -162,6 +162,9 @@ def process_withdraw_transactions(ticker=None):
         currency = Currency.objects.select_for_update().get(ticker=ticker)
         coin = AuthServiceProxy(currency.api_url)
 
+        # this will fail if bitcoin offline
+        coin.getbalance()
+
         wtxs = WithdrawTransaction.objects.select_for_update() \
             .select_related('wallet') \
             .filter(currency=currency, state=WithdrawTransaction.NEW, txid=None) \
@@ -185,7 +188,6 @@ def process_withdraw_transactions(ticker=None):
 
         wtxs_ids = list(wtxs.values_list('id', flat=True))
         wtxs.update(state=WithdrawTransaction.ERROR)
-
 
     # this will fail if bitcoin offline
     coin.getbalance()
