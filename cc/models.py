@@ -92,7 +92,7 @@ class Wallet(models.Model):
             currency=self.currency,
             amount=amount,
             address=address,
-            wallet=self
+            wallet=self,
         )
         Operation.objects.create(
             wallet=self,
@@ -191,10 +191,19 @@ class Transaction(models.Model):
 
 
 class WithdrawTransaction(models.Model):
+    NEW = 'NEW'
+    ERROR = 'ERROR'
+    DONE = 'DONE'
+    WTX_STATES = (
+        ('NEW', 'New'),
+        ('ERROR', 'Error'),
+        ('DONE', 'Done'),
+    )
     currency = models.ForeignKey('Currency')
     amount = models.DecimalField(_('Amount'), max_digits=18, decimal_places=8)
     address = models.CharField(_('Address'), max_length=50)
     wallet = models.ForeignKey(Wallet)
     created = models.DateTimeField(_('Created'), default=now)
     txid = models.CharField(_('Txid'), max_length=100, blank=True, null=True)
+    state = models.CharField(_('State'), max_length=10, choices=WTX_STATES, default=NEW)
     fee = models.DecimalField(_('Fee'), max_digits=18, decimal_places=8, null=True, blank=True)

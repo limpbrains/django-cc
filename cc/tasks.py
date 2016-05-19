@@ -152,33 +152,40 @@ def refill_addresses_queue():
 
 
 @shared_task(throws=(socket_error,))
-@transaction.atomic
 def process_withdraw_transactions(ticker=None):
     if not ticker:
         for c in Currency.objects.all():
             process_withdraw_transactions.delay(c.ticker)
         return
 
-    currency = Currency.objects.select_for_update().get(ticker=ticker)
-    coin = AuthServiceProxy(currency.api_url)
+    with transaction.atomic():
+        currency = Currency.objects.select_for_update().get(ticker=ticker)
+        coin = AuthServiceProxy(currency.api_url)
 
-    wtxs = WithdrawTransaction.objects.select_for_update().select_related('wallet').filter(currency=currency, txid=None).order_by('wallet')
+        wtxs = WithdrawTransaction.objects.select_for_update() \
+            .select_related('wallet') \
+            .filter(currency=currency, state=WithdrawTransaction.NEW, txid=None) \
+            .order_by('wallet')
 
-    transaction_hash = {}
-    for tx in wtxs:
-        if tx.address in transaction_hash:
-            transaction_hash[tx.address] += tx.amount
-        else:
-            transaction_hash[tx.address] = tx.amount
+        transaction_hash = {}
+        for tx in wtxs:
+            if tx.address in transaction_hash:
+                transaction_hash[tx.address] += tx.amount
+            else:
+                transaction_hash[tx.address] = tx.amount
 
-    if currency.dust > Decimal('0'):
-        for address, amount in list(transaction_hash.items()):
-            if amount < currency.dust:
-                wtxs = wtxs.exclude(currency=currency, address=address)
-                del transaction_hash[address]
+        if currency.dust > Decimal('0'):
+            for address, amount in list(transaction_hash.items()):
+                if amount < currency.dust:
+                    wtxs = wtxs.exclude(currency=currency, address=address)
+                    del transaction_hash[address]
 
-    if not transaction_hash:
-        return
+        if not transaction_hash:
+            return
+
+        wtxs_ids = list(wtxs.values_list('id', flat=True))
+        wtxs.update(state=WithdrawTransaction.ERROR)
+
 
     # this will fail if bitcoin offline
     coin.getbalance()
@@ -189,29 +196,33 @@ def process_withdraw_transactions(ticker=None):
         return
 
     fee = coin.gettransaction(txid).get('fee', 0) * -1
-    if not fee:
-        fee_per_tx = 0
-    else:
-        fee_per_tx = (fee / len(wtxs))
 
-    fee_hash = defaultdict(lambda : {'fee': Decimal("0"), 'amount': Decimal('0')})
+    with transaction.atomic():
+        currency = Currency.objects.select_for_update().get(ticker=ticker)
+        wtxs = WithdrawTransaction.objects.select_for_update().filter(id__in=wtxs_ids)
+        if not fee:
+            fee_per_tx = 0
+        else:
+            fee_per_tx = (fee / len(wtxs))
 
-    for tx in wtxs:
-        fee_hash[tx.wallet]['fee'] += fee_per_tx
-        fee_hash[tx.wallet]['amount'] += tx.amount
+        fee_hash = defaultdict(lambda : {'fee': Decimal('0'), 'amount': Decimal('0')})
 
-    for (wallet, data) in fee_hash.items():
-        Operation.objects.create(
-            wallet=wallet,
-            holded=-data['amount'],
-            balance=-data['fee'],
-            description='Network fee',
-            reason=tx
-        )
+        for tx in wtxs:
+            fee_hash[tx.wallet]['fee'] += fee_per_tx
+            fee_hash[tx.wallet]['amount'] += tx.amount
 
-        wallet = Wallet.objects.get(id=tx.wallet.id)
-        wallet.balance -= data['fee']
-        wallet.holded -= data['amount']
-        wallet.save()
+        for (wallet, data) in fee_hash.items():
+            Operation.objects.create(
+                wallet=wallet,
+                holded=-data['amount'],
+                balance=-data['fee'],
+                description='Network fee',
+                reason=tx
+            )
 
-    wtxs.update(txid=txid, fee=fee_per_tx)
+            wallet = Wallet.objects.get(id=tx.wallet.id)
+            wallet.balance -= data['fee']
+            wallet.holded -= data['amount']
+            wallet.save()
+
+        wtxs.update(txid=txid, fee=fee_per_tx, state=WithdrawTransaction.DONE)

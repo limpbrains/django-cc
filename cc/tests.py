@@ -3,7 +3,7 @@ import random
 from decimal import Decimal
 from mock import patch, MagicMock
 
-from django.test import TestCase
+from django.test import TransactionTestCase
 
 from cc.models import Wallet, Address, Currency, Operation, Transaction, WithdrawTransaction
 from cc import tasks
@@ -14,7 +14,7 @@ settings.CC_CONFIRMATIONS = 2
 settings.CC_ACCOUNT = ''
 
 
-class DepositeTransaction(TestCase):
+class DepositeTransaction(TransactionTestCase):
     def setUp(self):
         self.txdict = {
             'category': 'receive',
@@ -44,7 +44,7 @@ class DepositeTransaction(TestCase):
         self.assertTrue(tx.processed)
 
 
-class UnconfirmedTransaction(TestCase):
+class UnconfirmedTransaction(TransactionTestCase):
     def setUp(self):
         self.txdict = {
             'category': 'receive',
@@ -75,7 +75,7 @@ class UnconfirmedTransaction(TestCase):
         self.assertFalse(tx.processed)
 
 
-class ImmatureTransaction(TestCase):
+class ImmatureTransaction(TransactionTestCase):
     def setUp(self):
         self.txdict = {
             'category': 'immature',
@@ -106,7 +106,7 @@ class ImmatureTransaction(TestCase):
         self.assertFalse(tx.processed)
 
 
-class ConfirmTransaction(TestCase):
+class ConfirmTransaction(TransactionTestCase):
     def setUp(self):
         self.txdict = {
             'category': 'receive',
@@ -138,7 +138,7 @@ class ConfirmTransaction(TestCase):
         self.assertTrue(tx.processed)
 
 
-class WalletAddress(TestCase):
+class WalletAddress(TransactionTestCase):
     def setUp(self):
         self.btc = Currency.objects.create(label='Bitcoin', ticker='btc')
         self.ltc = Currency.objects.create(label='Litecoin', ticker='ltc', magicbyte='48')
@@ -158,7 +158,7 @@ class WalletAddress(TestCase):
         self.assertEqual(self.wallet.get_address(), unused)
 
 
-class WalletWithdraw(TestCase):
+class WalletWithdraw(TransactionTestCase):
     def setUp(self):
         self.btc = Currency.objects.create(label='Bitcoin', ticker='btc')
         self.wallet = Wallet.objects.create(currency=self.btc, label='Test', balance=Decimal('1.0'))
@@ -191,7 +191,7 @@ class WalletWithdraw(TestCase):
             self.wallet.withdraw_to_address('mz4ZbfKfU4SQWRDagkfX2TLAotpimAAVFE', Decimal('100'))
 
 
-class TaskWithdraw(TestCase):
+class TaskWithdraw(TransactionTestCase):
     def setUp(self):
         self.currency = Currency.objects.create(label='Testnet', ticker='tst', magicbyte='111,196')
         self.wallet = Wallet.objects.create(currency=self.currency, label='Test', balance=Decimal('1.0'))
@@ -252,7 +252,7 @@ class TaskWithdraw(TestCase):
         self.assertEqual(fee_operation.holded, Decimal('-0.4'))
 
 
-class TaskRefillAddressQueue(TestCase):
+class TaskRefillAddressQueue(TransactionTestCase):
     def setUp(self):
         self.currency = Currency.objects.create(label='Testnet', ticker='tst', magicbyte='111,196')
         self.wallet = Wallet.objects.create(currency=self.currency)
@@ -270,7 +270,7 @@ class TaskRefillAddressQueue(TestCase):
         self.assertEqual(len(Address.objects.all()), settings.CC_ADDRESS_QUEUE)
 
 
-class WalletTransfer(TestCase):
+class WalletTransfer(TransactionTestCase):
     def setUp(self):
         self.currency = Currency.objects.create(label='Testnet', ticker='tst', magicbyte='111,196')
         self.wallet1 = Wallet.objects.create(currency=self.currency, balance=1)
@@ -289,7 +289,7 @@ class WalletTransfer(TestCase):
         self.assertEqual(o2.balance, 1)
 
 
-class QueryTransaction(TestCase):
+class QueryTransaction(TransactionTestCase):
     def setUp(self):
         self.txdict = {
             "amount" : Decimal('3'),
@@ -335,7 +335,7 @@ class QueryTransaction(TestCase):
         self.assertEqual(wallet.balance, Decimal('3'))
 
 
-class Dust(TestCase):
+class Dust(TransactionTestCase):
     def setUp(self):
         self.currency = Currency.objects.create(label='Testnet', ticker='tst', magicbyte='111,196', dust=Decimal('0.00005430'))
         self.wallet = Wallet.objects.create(currency=self.currency, label='Test', balance=Decimal('2.0'))
