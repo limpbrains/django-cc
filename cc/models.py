@@ -204,6 +204,6 @@ class WithdrawTransaction(models.Model):
     address = models.CharField(_('Address'), max_length=50)
     wallet = models.ForeignKey(Wallet)
     created = models.DateTimeField(_('Created'), default=now)
-    txid = models.CharField(_('Txid'), max_length=100, blank=True, null=True)
+    txid = models.CharField(_('Txid'), max_length=100, blank=True, null=True, db_index=True)
     state = models.CharField(_('State'), max_length=10, choices=WTX_STATES, default=NEW)
     fee = models.DecimalField(_('Fee'), max_digits=18, decimal_places=8, null=True, blank=True)
