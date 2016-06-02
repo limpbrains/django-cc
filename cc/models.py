@@ -113,10 +113,15 @@ class Wallet(models.Model):
                                    holded=Sum('holded'),
                                    unconfirmed=Sum('unconfirmed'))
 
+        for k, v in recalc.items():
+            if v is None:
+                recalc[k] = Decimal('0')
+
         if save:
             self.balance = recalc['balance']
             self.holded = recalc['holded']
             self.unconfirmed = recalc['unconfirmed']
+            self.save()
 
         return recalc
 
@@ -205,5 +210,6 @@ class WithdrawTransaction(models.Model):
     wallet = models.ForeignKey(Wallet)
     created = models.DateTimeField(_('Created'), default=now)
     txid = models.CharField(_('Txid'), max_length=100, blank=True, null=True, db_index=True)
+    walletconflicts = models.CharField(_('Walletconflicts txid'), max_length=100, blank=True, null=True, db_index=True)
     state = models.CharField(_('State'), max_length=10, choices=WTX_STATES, default=NEW)
     fee = models.DecimalField(_('Fee'), max_digits=18, decimal_places=8, null=True, blank=True)

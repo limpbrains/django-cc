@@ -201,29 +201,29 @@ class TaskWithdraw(TransactionTestCase):
         self.mock.return_value = self.mock
         self.mock.sendmany.return_value = self.txid
         self.mock.gettransaction.return_value = {
-            u'fee': Decimal('-0.00010000'),
-            u'timereceived': 1410086093,
-            u'hex': u'010000000181d61f31536c155f43149bfa1a1ed0cd45c504f82e27f8411f14e6b37f926c62000000006a47304402206ac1b06a2ab1ad05c7874728188c73d99de7b8185bda0bce28e06762ea265ec0022050e614fe7aa4d34b75e6465685f12e3589a34763afa383414aaf4d2d62171ba20121020e871b50e2e1d46cac2f2b7611f1fcc97d41e9ced660682191c6ea391c7189e5ffffffff04e0247c38000000001976a91462403a00c6e4906d7624818eae2dc7572f0f592588ac002d3101000000001976a914a17b7337c17ab511686649515f7861944035846588ac80969800000000001976a91437138adaa16d895739a61d10d33fd0b898db552288ac80969800000000001976a914a621b489961d24092eba3838d3142173a8f9d8c488ac00000000',
-            u'txid': u'ea12fb225a0665e6ca35ab3fd7a514c36d1d5028d99340931d745dab62c13f8a',
-            u'amount': Decimal('-0.40000000'),
-            u'walletconflicts': [],
-            u'details': [{u'category': u'send',
-            u'account': u'',
-            u'fee': Decimal('-0.00010000'),
-            u'amount': Decimal('-0.20000000'),
-            u'address': u'mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB'},
-            {u'category': u'send',
-            u'account': u'',
-            u'fee': Decimal('-0.00010000'),
-            u'amount': Decimal('-0.10000000'),
-            u'address': u'mkYAsS9QLYo5mXVjuvxKkZUhQJxiMLX5Xk'},
-            {u'category': u'send',
-            u'account': u'',
-            u'fee': Decimal('-0.00010000'),
-            u'amount': Decimal('-0.10000000'),
-            u'address': u'mvfNqn5AoVWrsJGuKrdPuoQhYs71CR9uFA'}],
-            u'confirmations': 0,
-            u'time': 1410086093
+            'fee': Decimal('-0.00010000'),
+            'timereceived': 1410086093,
+            'hex': '010000000181d61f31536c155f43149bfa1a1ed0cd45c504f82e27f8411f14e6b37f926c62000000006a47304402206ac1b06a2ab1ad05c7874728188c73d99de7b8185bda0bce28e06762ea265ec0022050e614fe7aa4d34b75e6465685f12e3589a34763afa383414aaf4d2d62171ba20121020e871b50e2e1d46cac2f2b7611f1fcc97d41e9ced660682191c6ea391c7189e5ffffffff04e0247c38000000001976a91462403a00c6e4906d7624818eae2dc7572f0f592588ac002d3101000000001976a914a17b7337c17ab511686649515f7861944035846588ac80969800000000001976a91437138adaa16d895739a61d10d33fd0b898db552288ac80969800000000001976a914a621b489961d24092eba3838d3142173a8f9d8c488ac00000000',
+            'txid': 'ea12fb225a0665e6ca35ab3fd7a514c36d1d5028d99340931d745dab62c13f8a',
+            'amount': Decimal('-0.40000000'),
+            'walletconflicts': [],
+            'details': [{'category': 'send',
+            'account': '',
+            'fee': Decimal('-0.00010000'),
+            'amount': Decimal('-0.20000000'),
+            'address': 'mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB'},
+            {'category': 'send',
+            'account': '',
+            'fee': Decimal('-0.00010000'),
+            'amount': Decimal('-0.10000000'),
+            'address': 'mkYAsS9QLYo5mXVjuvxKkZUhQJxiMLX5Xk'},
+            {'category': 'send',
+            'account': '',
+            'fee': Decimal('-0.00010000'),
+            'amount': Decimal('-0.10000000'),
+            'address': 'mvfNqn5AoVWrsJGuKrdPuoQhYs71CR9uFA'}],
+            'confirmations': 0,
+            'time': 1410086093
         }
 
 
@@ -238,9 +238,9 @@ class TaskWithdraw(TransactionTestCase):
 
         self.mock.gettransaction.assert_called_once_with(self.txid)
         self.mock.sendmany.assert_called_once_with('', {
-            u'mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB': Decimal('0.2'),
-            u'mkYAsS9QLYo5mXVjuvxKkZUhQJxiMLX5Xk': Decimal('0.1'),
-            u'mvfNqn5AoVWrsJGuKrdPuoQhYs71CR9uFA': Decimal('0.1')
+            'mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB': Decimal('0.2'),
+            'mkYAsS9QLYo5mXVjuvxKkZUhQJxiMLX5Xk': Decimal('0.1'),
+            'mvfNqn5AoVWrsJGuKrdPuoQhYs71CR9uFA': Decimal('0.1')
         })
 
         wallet = Wallet.objects.get(id=self.wallet.id)
@@ -345,17 +345,17 @@ class Dust(TransactionTestCase):
         self.mock.return_value = self.mock
         self.mock.sendmany.return_value = self.txid
         self.mock.gettransaction.return_value = {
-            u'fee': Decimal('-0.00010000'),
-            u'timereceived': 1410086093,
-            u'hex': u'010000000181d61f31536c155f43149bfa1a1ed0cd45c504f82e27f8411f14e6b37f926c62000000006a47304402206ac1b06a2ab1ad05c7874728188c73d99de7b8185bda0bce28e06762ea265ec0022050e614fe7aa4d34b75e6465685f12e3589a34763afa383414aaf4d2d62171ba20121020e871b50e2e1d46cac2f2b7611f1fcc97d41e9ced660682191c6ea391c7189e5ffffffff04e0247c38000000001976a91462403a00c6e4906d7624818eae2dc7572f0f592588ac002d3101000000001976a914a17b7337c17ab511686649515f7861944035846588ac80969800000000001976a91437138adaa16d895739a61d10d33fd0b898db552288ac80969800000000001976a914a621b489961d24092eba3838d3142173a8f9d8c488ac00000000',
-            u'txid': u'ea12fb225a0665e6ca35ab3fd7a514c36d1d5028d99340931d745dab62c13f8a',
-            u'amount': Decimal('-10000000'),
-            u'walletconflicts': [],
-            u'details': [{u'category': u'send',
-            u'account': u'',
-            u'fee': Decimal('-0.00010000'),
-            u'amount': Decimal('-1.0000000'),
-            u'address': u'mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB'}]
+            'fee': Decimal('-0.00010000'),
+            'timereceived': 1410086093,
+            'hex': '010000000181d61f31536c155f43149bfa1a1ed0cd45c504f82e27f8411f14e6b37f926c62000000006a47304402206ac1b06a2ab1ad05c7874728188c73d99de7b8185bda0bce28e06762ea265ec0022050e614fe7aa4d34b75e6465685f12e3589a34763afa383414aaf4d2d62171ba20121020e871b50e2e1d46cac2f2b7611f1fcc97d41e9ced660682191c6ea391c7189e5ffffffff04e0247c38000000001976a91462403a00c6e4906d7624818eae2dc7572f0f592588ac002d3101000000001976a914a17b7337c17ab511686649515f7861944035846588ac80969800000000001976a91437138adaa16d895739a61d10d33fd0b898db552288ac80969800000000001976a914a621b489961d24092eba3838d3142173a8f9d8c488ac00000000',
+            'txid': 'ea12fb225a0665e6ca35ab3fd7a514c36d1d5028d99340931d745dab62c13f8a',
+            'amount': Decimal('-10000000'),
+            'walletconflicts': [],
+            'details': [{'category': 'send',
+            'account': '',
+            'fee': Decimal('-0.00010000'),
+            'amount': Decimal('-1.0000000'),
+            'address': 'mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB'}]
         }
 
     def test_process_withdraw_transactions(self):
@@ -366,7 +366,7 @@ class Dust(TransactionTestCase):
             tasks.process_withdraw_transactions(ticker=self.currency.ticker)
 
         self.mock.sendmany.assert_called_once_with('', {
-            u'mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB': Decimal('1')
+            'mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB': Decimal('1')
         })
 
         wallet = Wallet.objects.get(id=self.wallet.id)

@@ -40,7 +40,7 @@ admin.site.register(models.Address, AddressAdmin)
 
 
 class WithdrawTransactionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'currency', 'amount', 'address', 'wallet', 'created', 'state', 'txid', 'fee')
+    list_display = ('id', 'currency', 'amount', 'address', 'wallet', 'created', 'state', 'txid', 'walletconflicts', 'fee')
     list_filter = ('currency', 'state')
 
 admin.site.register(models.WithdrawTransaction, WithdrawTransactionAdmin)
