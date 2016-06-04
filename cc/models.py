@@ -94,7 +94,7 @@ class Wallet(models.Model):
             address=address,
             wallet=self,
         )
-        Operation.objects.create(
+        op = Operation.objects.create(
             wallet=self,
             balance=-amount,
             holded=amount,
@@ -104,6 +104,11 @@ class Wallet(models.Model):
         self.balance -= amount
         self.holded += amount
         self.save()
+
+        return {
+            'tx': tx,
+            'op': op,
+        }
 
     def total_received(self):
         return Operation.objects.filter(wallet=self, balance__gt=0).aggregate(balance=Sum('balance'))['balance'] or Decimal('0')
