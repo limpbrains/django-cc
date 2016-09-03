@@ -151,7 +151,7 @@ def refill_addresses_queue():
                     pass
 
 
-@shared_task(throws=(socket_error,))
+@shared_task()
 def process_withdraw_transactions(ticker=None):
     if not ticker:
         for c in Currency.objects.all():
