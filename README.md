@@ -5,6 +5,8 @@ Django-cryptocurrencies web wallet for Bitcoin and other cryptocurrencies.
 
 Simple pluggable application inspired by django-bitcoin.
 
+Python 3
+
 ## Features ##
 * Multi-currency
 * Celery support
