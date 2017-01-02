@@ -19,9 +19,9 @@ setup(
     description='Django wallet for Bitcoin and other cryptocurrencies',
     download_url = 'https://github.com/limpbrains/django-cc/tarball/0.2',
     install_requires=[
-        'celery',
+        'celery>=3,<4',
         'Django>=1.7',
-        'mock',
+        'mock>=2.0',
         'pycoin',
         'python-bitcoinrpc>=1.0',
     ],
