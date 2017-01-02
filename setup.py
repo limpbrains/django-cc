@@ -7,7 +7,7 @@ setup(
     author_email='ivan.vershigora@gmail.com',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
-        'Framework :: Django'
+        'Framework :: Django',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
