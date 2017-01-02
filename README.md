@@ -16,8 +16,7 @@ Python 3
 ## Quick start ##
 
 Edit Currency model
-```
-#!python
+```python
 
 from cc.models import Currency
 
@@ -29,22 +28,19 @@ currency = Currency.object.create(
 ```
 
 Start celery worker
-```
-#!bash
+```bash
 $ celery worker -A tst.cel.app
 ```
 
 Get new addresses for wallets
 
-```
-#!bash
+```bash
 $ celery call cc.tasks.refill_addresses_queue
 ```
 
 Now you can create wallets, deposite and withdraw funds
 
-```
-#!python
+```python
 
 from cc.models import Wallet
 
@@ -59,14 +55,12 @@ wallet.withdraw('mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB', Decimal('0.01'))
 
 After creating a withdraw transaction you need to run
 
-```
-#!bash
+```bash
 $ celery call cc.tasks.process_withdraw_transactions
 ```
 
 Query for new deposite transactions:
-```
-#!bash
+```bash
 $ cc.tasks.query_transactions
 ```
 
