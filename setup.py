@@ -3,21 +3,32 @@ from os.path import join, dirname
 
 
 setup(
-    name='django-cc',
-    version='0.2',
-    license='MIT License',
-    description='Django wallet for Bitcoin and other cryptocurrencies',
     author='Ivan Vershigora',
     author_email='ivan.vershigora@gmail.com',
-    url='https://github.com/limpbrains/django-cc',
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Developers',
+        'Topic :: Software Development :: Build Tools',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3',
+        'Framework :: Django'
+    ],
+    description='Django wallet for Bitcoin and other cryptocurrencies',
     download_url = 'https://github.com/limpbrains/django-cc/tarball/0.2',
-    keywords='bitcoin litecoin django wallet',
-    packages=find_packages(),
-    long_description=open(join(dirname(__file__), 'README.md')).read(),
     install_requires=[
         'Django>=1.7',
         'celery',
         'pycoin',
-        'python-bitcoinrpc>=1.0'
-    ]
+        'python-bitcoinrpc>=1.0',
+    ],
+    keywords='bitcoin litecoin django wallet cryptocurrency',
+    license='MIT License',
+    long_description=open(join(dirname(__file__), 'README.md')).read(),
+    name='django-cc',
+    packages=find_packages(),
+    tests_require=[
+        'mock',
+    ],
+    url='https://github.com/limpbrains/django-cc',
+    version='0.2',
 )
