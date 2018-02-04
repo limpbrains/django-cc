@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 from decimal import Decimal
 
-from django.db import models
-from django.db.models import Sum
-
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.validators import validate_comma_separated_integer_list
+from django.db import models
+from django.db.models import Sum
 from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 
 from cc import settings
 from cc.validator import validate
 
 class Wallet(models.Model):
-    currency = models.ForeignKey('Currency')
+    currency = models.ForeignKey('Currency', on_delete=models.CASCADE)
     balance = models.DecimalField(_('Balance'), max_digits=18, decimal_places=8, default=0)
     holded = models.DecimalField(_('Holded'), max_digits=18, decimal_places=8, default=0)
     unconfirmed = models.DecimalField(_('Unconfirmed'), max_digits=18, decimal_places=8, default=0)
@@ -150,26 +150,24 @@ class Wallet(models.Model):
 
 
 class Operation(models.Model):
-    wallet = models.ForeignKey(Wallet)
+    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
     created = models.DateTimeField(_('Created'), default=now)
     balance = models.DecimalField(_('Balance'), max_digits=18, decimal_places=8, default=0)
     holded = models.DecimalField(_('Holded'), max_digits=18, decimal_places=8, default=0)
     unconfirmed = models.DecimalField(_('Unconfirmed'), max_digits=18, decimal_places=8, default=0)
-
     description = models.CharField(_('Description'), max_length=100, blank=True, null=True)
-
-    reason_content_type = models.ForeignKey(ContentType, null=True, blank=True)
+    reason_content_type = models.ForeignKey(ContentType, null=True, blank=True, on_delete=models.CASCADE)
     reason_object_id = models.PositiveIntegerField(null=True, blank=True)
     reason = GenericForeignKey('reason_content_type', 'reason_object_id')
 
 
 class Address(models.Model):
     address = models.CharField(_('Address'), max_length=50, primary_key=True)
-    currency = models.ForeignKey('Currency')
+    currency = models.ForeignKey('Currency', on_delete=models.CASCADE)
     created = models.DateTimeField(_('Created'), default=now)
     active = models.BooleanField(_('Active'), default=True)
     label = models.CharField(_('Label'), max_length=50, blank=True, null=True, default=None)
-    wallet = models.ForeignKey(Wallet, blank=True, null=True, related_name="addresses")
+    wallet = models.ForeignKey(Wallet, blank=True, null=True, related_name="addresses", on_delete=models.CASCADE)
 
     def __str__(self):
         return u'{0}, {1}'.format(self.address, self.currency.ticker)
@@ -178,7 +176,7 @@ class Address(models.Model):
 class Currency(models.Model):
     ticker = models.CharField(_('Ticker'), max_length=4, default='BTC', primary_key=True)
     label = models.CharField(_('Label'), max_length=20, default='Bitcoin', unique=True)
-    magicbyte = models.CommaSeparatedIntegerField(_('Magicbytes'), max_length=10, default='0,5')
+    magicbyte = models.CharField(_('Magicbytes'), max_length=10, default='0,5', validators=[validate_comma_separated_integer_list])
     last_block = models.PositiveIntegerField(_('Last block'), blank=True, null=True, default=0)
     api_url = models.CharField(_('API hostname'), default='http://localhost:8332', max_length=100, blank=True, null=True)
     dust = models.DecimalField(_('Dust'), max_digits=18, decimal_places=8, default=Decimal('0.0000543'))
@@ -193,7 +191,7 @@ class Currency(models.Model):
 class Transaction(models.Model):
     txid = models.CharField(_('Txid'), max_length=100)
     address = models.CharField(_('Address'), max_length=50)
-    currency = models.ForeignKey('Currency')
+    currency = models.ForeignKey('Currency', on_delete=models.CASCADE)
     processed = models.BooleanField(_('Processed'), default=False)
 
     class Meta:
@@ -209,10 +207,10 @@ class WithdrawTransaction(models.Model):
         ('ERROR', 'Error'),
         ('DONE', 'Done'),
     )
-    currency = models.ForeignKey('Currency')
+    currency = models.ForeignKey('Currency', on_delete=models.CASCADE)
     amount = models.DecimalField(_('Amount'), max_digits=18, decimal_places=8)
     address = models.CharField(_('Address'), max_length=50)
-    wallet = models.ForeignKey(Wallet)
+    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
     created = models.DateTimeField(_('Created'), default=now)
     txid = models.CharField(_('Txid'), max_length=100, blank=True, null=True, db_index=True)
     walletconflicts = models.CharField(_('Walletconflicts txid'), max_length=100, blank=True, null=True, db_index=True)
