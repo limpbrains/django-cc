@@ -317,7 +317,7 @@ class QueryTransaction(TransactionTestCase):
                 }
             ]
         }
-        self.currency = Currency.objects.create(label='BItcoin', ticker='BTC', magicbyte='0,5')
+        self.currency = Currency.objects.create(label='Bitcoin', ticker='BTC', magicbyte='0,5')
         self.wallet = Wallet.objects.create(currency=self.currency, label='Test')
         self.address1 = Address.objects.create(address=self.txdict['details'][0]['address'], wallet=self.wallet, currency=self.currency)
         self.address2 = Address.objects.create(address=self.txdict['details'][1]['address'], wallet=self.wallet, currency=self.currency)

@@ -20,7 +20,7 @@ Edit Currency model
 
 from cc.models import Currency
 
-currency = Currency.object.create(
+currency = Currency.objects.create(
     label = 'Bitcoin',
     ticker = 'BTC',
     api_url = 'http://root:toor@localhost:8332'
@@ -50,7 +50,7 @@ wallet = Wallet.objects.create(
 
 wallet.get_address()
 
-wallet.withdraw('mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB', Decimal('0.01'))
+wallet.withdraw_to_address('mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB', Decimal('0.01'))
 ```
 
 After creating a withdraw transaction you need to run
