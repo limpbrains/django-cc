@@ -29,20 +29,15 @@ def query_transactions(ticker=None):
     currency = Currency.objects.select_for_update().get(ticker=ticker)
     coin = AuthServiceProxy(currency.api_url)
     current_block = coin.getblockcount()
-    processed_transactions = []
 
     block_hash = coin.getblockhash(currency.last_block)
     transactions = coin.listsinceblock(block_hash)['transactions']
 
     for tx in transactions:
-        if tx['txid'] in processed_transactions:
-            continue
-
         if tx['category'] not in ('receive', 'generate', 'immature'):
             continue
 
         process_deposite_transaction(tx, ticker)
-        processed_transactions.append(tx['txid'])
 
     currency.last_block = current_block
     currency.save()

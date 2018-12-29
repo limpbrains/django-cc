@@ -376,3 +376,216 @@ class Dust(TransactionTestCase):
         wt2 = WithdrawTransaction.objects.get(address='mvfNqn5AoVWrsJGuKrdPuoQhYs71CR9uFA')
         self.assertEqual(wt1.txid, self.txid)
         self.assertIsNone(wt2.txid)
+
+
+class MultiplySendAndRecieve(TransactionTestCase):
+    def setUp(self):
+        self.currency = Currency.objects.create(label='Dogecoin', ticker='DOGE', magicbyte='30,22', dust=Decimal('0.00005430'))
+        self.wallet = Wallet.objects.create(currency=self.currency, label='Test', balance=Decimal('0'))
+        address1 = Address.objects.create(address='DAxYL8VtrREDXojb7BtPVc3kehehGobN9u', wallet=self.wallet, currency=self.currency)
+        address2 = Address.objects.create(address='DFDwMVrNG6oqLzyRWmJh32qsmH49nseY8i', wallet=self.wallet, currency=self.currency)
+        address3 = Address.objects.create(address='DEQMUMT8bG6RKP1tjjRRhT2NMbRkzs2TN4', wallet=self.wallet, currency=self.currency)
+
+        self.mock = MagicMock(name='asp')
+        self.mock.return_value = self.mock
+        self.mock.getblockcount.return_value = 2535930
+        self.mock.getblockhash.return_value = '1a91e3dace36e2be3bf030a65679fe821aa1d6ef92e7c9902eb318182c355691'
+        self.mock.listsinceblock.return_value = {
+            "transactions": [{
+                "account" : "",
+                "address" : "D6ija2Wvw4TWCg9a6jvwLQ1gqZzirwLHYC",
+                "category" : "send",
+                "amount" : Decimal('-277.96340734'),
+                "vout" : 0,
+                "fee" : -1.00000000,
+                "confirmations" : 173,
+                "blockhash" : "7a114c079063e7a17e9282aa0d719e99fc0b178c4dc2e004f7be2277327513f6",
+                "blockindex" : 12,
+                "blocktime" : 1546085077,
+                "txid" : "238cf78c93383c0bd42b10e331a2804fc34b968db0142dd27565ebf47b79638d",
+                "walletconflicts" : [],
+                "time" : 1546085018,
+                "timereceived" : 1546085018
+            },
+            {
+                "account" : "",
+                "address" : "DFcNpsPqXHufBbLfNfCEA6N2Vv5cP41z6r",
+                "category" : "send",
+                "amount" : Decimal('-79.16240137'),
+                "vout" : 1,
+                "fee" : -1.00000000,
+                "confirmations" : 173,
+                "blockhash" : "7a114c079063e7a17e9282aa0d719e99fc0b178c4dc2e004f7be2277327513f6",
+                "blockindex" : 12,
+                "blocktime" : 1546085077,
+                "txid" : "238cf78c93383c0bd42b10e331a2804fc34b968db0142dd27565ebf47b79638d",
+                "walletconflicts" : [],
+                "time" : 1546085018,
+                "timereceived" : 1546085018
+            },
+            {
+                "account" : "",
+                "address" : "DHvgASzm2RPqStJxUANCM6ZDsFdTyRfjwb",
+                "category" : "send",
+                "amount" : Decimal('-39.58120069'),
+                "vout" : 3,
+                "fee" : -1.00000000,
+                "confirmations" : 173,
+                "blockhash" : "7a114c079063e7a17e9282aa0d719e99fc0b178c4dc2e004f7be2277327513f6",
+                "blockindex" : 12,
+                "blocktime" : 1546085077,
+                "txid" : "238cf78c93383c0bd42b10e331a2804fc34b968db0142dd27565ebf47b79638d",
+                "walletconflicts" : [],
+                "time" : 1546085018,
+                "timereceived" : 1546085018
+            },
+            {
+                "account" : "",
+                "address" : "D6Cm1X9fKG2eYYiqCHXc1bWCk6RpVCXS3n",
+                "category" : "send",
+                "amount" : Decimal('-118.74360206'),
+                "vout" : 4,
+                "fee" : -1.00000000,
+                "confirmations" : 173,
+                "blockhash" : "7a114c079063e7a17e9282aa0d719e99fc0b178c4dc2e004f7be2277327513f6",
+                "blockindex" : 12,
+                "blocktime" : 1546085077,
+                "txid" : "238cf78c93383c0bd42b10e331a2804fc34b968db0142dd27565ebf47b79638d",
+                "walletconflicts" : [],
+                "time" : 1546085018,
+                "timereceived" : 1546085018
+            },
+            {
+                "account" : "",
+                "address" : "DAxYL8VtrREDXojb7BtPVc3kehehGobN9u",
+                "category" : "send",
+                "amount" : Decimal('-79.16240137'),
+                "vout" : 5,
+                "fee" : -1.00000000,
+                "confirmations" : 173,
+                "blockhash" : "7a114c079063e7a17e9282aa0d719e99fc0b178c4dc2e004f7be2277327513f6",
+                "blockindex" : 12,
+                "blocktime" : 1546085077,
+                "txid" : "238cf78c93383c0bd42b10e331a2804fc34b968db0142dd27565ebf47b79638d",
+                "walletconflicts" : [],
+                "time" : 1546085018,
+                "timereceived" : 1546085018
+            },
+            {
+                "account" : "",
+                "address" : "D9iXHXUMKni2ZeneMXQFfTvumL3DP1UNMc",
+                "category" : "send",
+                "amount" : Decimal('-198.80100597'),
+                "vout" : 6,
+                "fee" : -1.00000000,
+                "confirmations" : 173,
+                "blockhash" : "7a114c079063e7a17e9282aa0d719e99fc0b178c4dc2e004f7be2277327513f6",
+                "blockindex" : 12,
+                "blocktime" : 1546085077,
+                "txid" : "238cf78c93383c0bd42b10e331a2804fc34b968db0142dd27565ebf47b79638d",
+                "walletconflicts" : [],
+                "time" : 1546085018,
+                "timereceived" : 1546085018
+            },
+                    {
+                "account" : "",
+                "address" : "DFDwMVrNG6oqLzyRWmJh32qsmH49nseY8i",
+                "category" : "send",
+                "amount" : Decimal('-198.80100597'),
+                "vout" : 7,
+                "fee" : -1.00000000,
+                "confirmations" : 173,
+                "blockhash" : "7a114c079063e7a17e9282aa0d719e99fc0b178c4dc2e004f7be2277327513f6",
+                "blockindex" : 12,
+                "blocktime" : 1546085077,
+                "txid" : "238cf78c93383c0bd42b10e331a2804fc34b968db0142dd27565ebf47b79638d",
+                "walletconflicts" : [],
+                "time" : 1546085018,
+                "timereceived" : 1546085018
+            },
+            {
+                "account" : "",
+                "address" : "DEQMUMT8bG6RKP1tjjRRhT2NMbRkzs2TN4",
+                "category" : "send",
+                "amount" : Decimal('-298.20150896'),
+                "vout" : 8,
+                "fee" : -1.00000000,
+                "confirmations" : 173,
+                "blockhash" : "7a114c079063e7a17e9282aa0d719e99fc0b178c4dc2e004f7be2277327513f6",
+                "blockindex" : 12,
+                "blocktime" : 1546085077,
+                "txid" : "238cf78c93383c0bd42b10e331a2804fc34b968db0142dd27565ebf47b79638d",
+                "walletconflicts" : [],
+                "time" : 1546085018,
+                "timereceived" : 1546085018
+            },
+            {
+                "account" : "",
+                "address" : "DRWV6punNdNNMetJRegrkKRHA2eiuvBf3D",
+                "category" : "send",
+                "amount" : Decimal('-99.40050298'),
+                "vout" : 9,
+                "fee" : -1.00000000,
+                "confirmations" : 173,
+                "blockhash" : "7a114c079063e7a17e9282aa0d719e99fc0b178c4dc2e004f7be2277327513f6",
+                "blockindex" : 12,
+                "blocktime" : 1546085077,
+                "txid" : "238cf78c93383c0bd42b10e331a2804fc34b968db0142dd27565ebf47b79638d",
+                "walletconflicts" : [],
+                "time" : 1546085018,
+                "timereceived" : 1546085018
+            },
+            {
+                "account" : "",
+                "address" : "DAxYL8VtrREDXojb7BtPVc3kehehGobN9u",
+                "category" : "receive",
+                "amount" : Decimal('79.16240137'),
+                "vout" : 5,
+                "confirmations" : 173,
+                "blockhash" : "7a114c079063e7a17e9282aa0d719e99fc0b178c4dc2e004f7be2277327513f6",
+                "blockindex" : 12,
+                "blocktime" : 1546085077,
+                "txid" : "238cf78c93383c0bd42b10e331a2804fc34b968db0142dd27565ebf47b79638d",
+                "walletconflicts" : [],
+                "time" : 1546085018,
+                "timereceived" : 1546085018
+            },
+            {
+                "account" : "",
+                "address" : "DFDwMVrNG6oqLzyRWmJh32qsmH49nseY8i",
+                "category" : "receive",
+                "amount" : Decimal('198.80100597'),
+                "vout" : 7,
+                "confirmations" : 173,
+                "blockhash" : "7a114c079063e7a17e9282aa0d719e99fc0b178c4dc2e004f7be2277327513f6",
+                "blockindex" : 12,
+                "blocktime" : 1546085077,
+                "txid" : "238cf78c93383c0bd42b10e331a2804fc34b968db0142dd27565ebf47b79638d",
+                "walletconflicts" : [],
+                "time" : 1546085018,
+                "timereceived" : 1546085018
+            },
+            {
+                "account" : "",
+                "address" : "DEQMUMT8bG6RKP1tjjRRhT2NMbRkzs2TN4",
+                "category" : "receive",
+                "amount" : Decimal('298.20150896'),
+                "vout" : 8,
+                "confirmations" : 173,
+                "blockhash" : "7a114c079063e7a17e9282aa0d719e99fc0b178c4dc2e004f7be2277327513f6",
+                "blockindex" : 12,
+                "blocktime" : 1546085077,
+                "txid" : "238cf78c93383c0bd42b10e331a2804fc34b968db0142dd27565ebf47b79638d",
+                "walletconflicts" : [],
+                "time" : 1546085018,
+                "timereceived" : 1546085018
+            }]
+        }
+
+    def test_balance(self):
+        with patch('cc.tasks.AuthServiceProxy', self.mock):
+            tasks.query_transactions('DOGE')
+
+        wallet = Wallet.objects.get(id=self.wallet.id)
+
+        self.assertEqual(wallet.balance, Decimal('576.1649163'))
