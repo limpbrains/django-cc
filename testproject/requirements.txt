@@ -1,0 +1,6 @@
+celery>=3
+Django>=1.7
+mock
+pycoin
+python-bitcoinrpc>=1.0
+ipython

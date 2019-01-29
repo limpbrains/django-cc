@@ -1,3 +1,8 @@
 *.pyc
 /*.egg-info/
 dist/
+env/
+*.sublime-project
+*.sublime-workspace
+testproject/db.sqlite3
+
