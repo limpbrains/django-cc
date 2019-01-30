@@ -10,6 +10,7 @@ services:
     ports:
       - "8000:8000"
     depends_on:
+      - dashd
       - bitcoind
 
   bitcoind:
@@ -17,11 +18,23 @@ services:
     environment:
       BITCOIN_NETWORK: regtest
       BITCOIN_EXTRA_ARGS: |-
-        rpcuser=ceiwHEbqWI83
-        rpcpassword=DwubwWsoo3
+        rpcuser=root
+        rpcpassword=toor
         rpcport=43782
-        port=39388
     ports:
       - "43782:43782"
     expose:
       - "43782"
+
+  dashd:
+    image: btcpayserver/dash:0.12.3
+    environment:
+      BITCOIN_EXTRA_ARGS: |
+        regtest=1
+        rpcuser=root
+        rpcpassword=toor
+        rpcport=19998
+    ports:
+      - "19998:19998"
+    expose:
+      - "19998"
