@@ -72,3 +72,28 @@ blocknotify=~/env/bin/celery call cc.tasks.query_transactions --args='["BTC"]'
 
 ```
 where "BTC" - ticker (short name) of the Currency
+
+## Supported crypto currencies
+
+In general django-cc should work with most Bitcoin forks. I've tested it against: Bitcoin, Litecoin, Zcash (not anonymous transactions), Dogecoin and Dash. 
+
+### Magic bytes
+
+Magic bytes are used to verify withdraw addresses. They are different for each cryptocurrency
+
+| CC       | Mainnet | Testnet |
+| -------- | ------- | ------- |
+| Bitcoin  | 0,5     | 111,196 | 
+| Litecoin | 48,50   |         | 
+| Zcash    | 28      |         | 
+| Dogecoin | 30,22   |         | 
+| Dash     | 76,16   |         | 
+
+### Dust
+
+Minimal amount of valid transaction
+
+| CC       | Dust size    |
+| -------- | ------------ |
+| Bitcoin  | `0.00005430` |
+| Litecoin | `0.00054600` |
