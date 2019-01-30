@@ -2,7 +2,7 @@ import string
 import random
 from decimal import Decimal
 from mock import patch, MagicMock
-from bitcoinrpc.authproxy import AuthServiceProxy
+from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
 from django.test import TransactionTestCase
 
 from cc.models import Wallet, Address, Currency, Operation, Transaction, WithdrawTransaction
@@ -73,3 +73,21 @@ class WalletAddressGet(TransactionTestCase):
         wallet_after2 = Wallet.objects.get(id=wallet_before.id)
         self.assertEqual(wallet_after2.balance, Decimal('0.7') + tx['fee'])
         self.assertEqual(wallet_after2.holded, Decimal('0'))
+
+    def test_withdraw_error(self):
+        wallet_before = Wallet.objects.create(currency=self.currency, balance=Decimal('21000000'))
+        wallet_before.withdraw_to_address('mvEnyQ9b9iTA11QMHAwSVtHUrtD4CTfiDB', Decimal('21000000'))
+
+        try:
+            tasks.process_withdraw_transactions('tbtc')
+        except JSONRPCException:
+            pass
+
+        wallet_after1 = Wallet.objects.get(id=wallet_before.id)
+        self.assertEqual(wallet_after1.balance, Decimal('0'))
+        self.assertEqual(wallet_after1.holded, Decimal('21000000'))
+
+        wtx = WithdrawTransaction.objects.last()
+
+        wallet_after1 = Wallet.objects.get(id=wallet_before.id)
+        self.assertEqual(wtx.state, wtx.ERROR)
