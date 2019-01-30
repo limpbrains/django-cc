@@ -86,10 +86,10 @@ Magic bytes are used to verify withdraw addresses. They are different for each c
 | CC       | Mainnet | Testnet |
 | -------- | ------- | ------- |
 | Bitcoin  | 0,5     | 111,196 | 
-| Litecoin | 48,50   |         | 
+| Litecoin | 48,50   | 58      | 
 | Zcash    | 28      |         | 
 | Dogecoin | 30,22   |         | 
-| Dash     | 76,16   |         | 
+| Dash     | 76,16   | 140     | 
 
 ### Dust
 

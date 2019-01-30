@@ -12,6 +12,7 @@ services:
     depends_on:
       - dashd
       - bitcoind
+      - litecoind
 
   bitcoind:
     image: btcpayserver/bitcoin:0.17.0
@@ -38,3 +39,17 @@ services:
       - "19998:19998"
     expose:
       - "19998"
+
+  litecoind:
+    image: nicolasdorier/docker-litecoin:0.16.3
+    environment:
+      BITCOIN_EXTRA_ARGS: |-
+        regtest=1
+        rpcuser=root
+        rpcpassword=toor
+        rpcport=19335
+    ports:
+      - "19335:19335"
+    expose:
+      - "19335"
+
