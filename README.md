@@ -77,6 +77,8 @@ where "BTC" - ticker (short name) of the Currency
 
 In general django-cc should work with most Bitcoin forks. I've tested it against: Bitcoin, Litecoin, Zcash (not anonymous transactions), Dogecoin and Dash. 
 
+When you are adding any other `Currency`, than Bitcoin, you should define `magicbyte` and `dust` values. Use tables below to get the values.
+
 ### Magic bytes
 
 Magic bytes are used to verify withdraw addresses. They are different for each cryptocurrency
