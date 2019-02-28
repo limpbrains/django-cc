@@ -13,6 +13,7 @@ services:
       - dashd
       - bitcoind
       - litecoind
+      - zcashd
 
   bitcoind:
     image: btcpayserver/bitcoin:0.17.0
@@ -24,8 +25,6 @@ services:
         rpcport=43782
     ports:
       - "43782:43782"
-    expose:
-      - "43782"
 
   dashd:
     image: btcpayserver/dash:0.12.3
@@ -37,8 +36,6 @@ services:
         rpcport=19998
     ports:
       - "19998:19998"
-    expose:
-      - "19998"
 
   litecoind:
     image: nicolasdorier/docker-litecoin:0.16.3
@@ -50,6 +47,9 @@ services:
         rpcport=19335
     ports:
       - "19335:19335"
-    expose:
-      - "19335"
 
+  zcashd:
+    image: messari/zcash-core:2.0.3
+    command: -printtoconsole -regtest=1 -rpcuser=root -rpcpassword=toor -server -rest -rpcallowip=0.0.0.0/0
+    ports:
+      - "18232:18232"
