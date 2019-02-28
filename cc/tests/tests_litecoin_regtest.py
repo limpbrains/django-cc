@@ -25,10 +25,11 @@ class WalletAddressGet(TransactionTestCase):
             try:
                 cls.coin.generate(101)
             except JSONRPCException as e:
-                if e['code'] != -28:
+                if e.code != -28:
                     raise
             else:
                 starting = False
+                sleep(1)
 
     @classmethod
     def tearDownClass(cls):
