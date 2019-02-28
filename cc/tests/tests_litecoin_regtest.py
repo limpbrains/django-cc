@@ -20,7 +20,15 @@ class WalletAddressGet(TransactionTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.coin = AuthServiceProxy(URL)
-        cls.coin.generate(101)
+        starting = True
+        while starting:
+            try:
+                cls.coin.generate(101)
+            except JSONRPCException as e:
+                if e['code'] != -28:
+                    raise
+            else:
+                starting = False
 
     @classmethod
     def tearDownClass(cls):
