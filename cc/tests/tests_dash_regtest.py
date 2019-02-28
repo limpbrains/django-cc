@@ -1,5 +1,6 @@
 import string
 import random
+from time import sleep
 from decimal import Decimal
 from mock import patch, MagicMock
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException

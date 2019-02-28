@@ -1,5 +1,5 @@
 # django-cc #
-
+[![Build Status](https://travis-ci.org/limpbrains/django-cc.svg?branch=master)](https://travis-ci.org/limpbrains/django-cc)
 
 Django-cryptocurrencies web wallet for Bitcoin and other cryptocurrencies.
 
