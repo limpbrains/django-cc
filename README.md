@@ -73,6 +73,12 @@ blocknotify=~/env/bin/celery call cc.tasks.query_transactions --args='["BTC"]'
 ```
 where "BTC" - ticker (short name) of the Currency
 
+### Transactions
+
+When you write applications that are working with money it is extremely important to use Database transactions. Currenly django-cc doesn't inclues any `@transaction.atomic`. You should do this by yourself.
+
+In my code I have a higher level wrapper with @transaction.atomic and to get wallets I'm always using select for update, like `Wallet.objects.select_for_update().get(addresses=address)` to get a lock over the Wallet.
+
 ## Supported crypto currencies
 
 In general django-cc should work with most Bitcoin forks. I've tested it against: Bitcoin, Litecoin, Zcash (not anonymous transactions), Dogecoin and Dash. 
@@ -99,3 +105,7 @@ Minimal amount of valid transaction
 | -------- | ------------ |
 | Bitcoin  | `0.00005430` |
 | Litecoin | `0.00054600` |
+
+### Testing
+
+Tests are written using Regtest. To run them you need docker and docker-compose. Simply run `docker-compose up` and it will build and run all tests for you. Usually it takes about 5 min to run all the tests.
