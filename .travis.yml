@@ -1,0 +1,19 @@
+services:
+  - docker
+
+language: python
+
+python: 3.6
+
+before_install:
+  - docker -v
+  - docker-compose -v
+  - docker-compose build
+
+script:
+  - docker-compose up
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
