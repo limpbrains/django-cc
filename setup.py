@@ -17,12 +17,12 @@ setup(
         'Topic :: Software Development :: Build Tools',
     ],
     description='Django wallet for Bitcoin and other cryptocurrencies',
-    download_url = 'https://github.com/limpbrains/django-cc/tarball/0.2.2',
+    download_url = 'https://github.com/limpbrains/django-cc/tarball/0.2.3',
     install_requires=[
         'celery>=3',
         'Django>=1.7',
         'mock',
-        'pycoin',
+        'pycoin>=0.90',
         'python-bitcoinrpc>=1.0',
     ],
     keywords='bitcoin django wallet cryptocurrency litecoin zcash dogecoin dash',
@@ -31,5 +31,5 @@ setup(
     name='django-cc',
     packages=find_packages(),
     url='https://github.com/limpbrains/django-cc',
-    version='0.2.2',
+    version='0.2.3',
 )
