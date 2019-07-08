@@ -17,6 +17,7 @@ setup(
         'Topic :: Software Development :: Build Tools',
     ],
     description='Django wallet for Bitcoin and other cryptocurrencies',
+    long_description_content_type="text/markdown",
     download_url = 'https://github.com/limpbrains/django-cc/tarball/0.2.3',
     install_requires=[
         'celery>=3',
