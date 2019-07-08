@@ -1,6 +1,6 @@
 celery>=3
 Django>=1.7
 mock
-pycoin
+pycoin>=0.90
 python-bitcoinrpc>=1.0
 ipython
