@@ -1,4 +1,5 @@
-from pycoin.encoding import a2b_hashed_base58, EncodingError
+from pycoin.encoding.b58 import a2b_hashed_base58
+from pycoin.encoding.exceptions import EncodingError
 
 
 def validate(address, magic_bytes):
